@@ -9,6 +9,8 @@ int main(void){
         printf("Texto decodificado de UTF-8 para UTF-32 com sucesso!\n");
     }
 
+    fclose(arquivo_entrada);
+    fclose(arquivo_saida);
 
     return 0;
 }

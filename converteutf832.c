@@ -33,6 +33,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
     while(!feof(arquivo_entrada)){ //iniciando leitura do arquivo de entrada
         carac = fgetc(arquivo_entrada); //lê o primeiro byte
+        printf("utf-8 %02x\n", carac);
 
         if (carac <= 0x7F){ //primeiro caso: 1 byte (de 0x00 a 0x7F)
             fwrite(&carac, 1, sizeof(int), arquivo_saida);
@@ -44,6 +45,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             aux = aux << 6; //é realizado o shift à esquerda, para podermos depois inserir os 6 bits que faltam no final
 
             carac = fgetc(arquivo_entrada); //para ler o segundo byte
+            printf("utf-8 %02x\n", carac);
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
             carac = carac | aux; //une as duas partes (char) em um só int
@@ -57,12 +59,14 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             aux = aux << 12; //é realizado o shift à esquerda, para podermos depois inserir os 12 bits que faltam no final
 
             carac = fgetc(arquivo_entrada); //para ler o segundo byte
+            printf("utf-8 %02x\n", carac);
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
             carac = carac << 6; //é realizado o shift à esquerda, para podermos depois inserir os 6 bits que faltam no final
 
             carac = carac | aux; //une as duas partes (char) em um só int
 
             aux = fgetc(arquivo_entrada); //para ler o terceiro byte
+            printf("utf-8 %02x\n", aux);
             aux = aux & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
             carac = carac | aux; //une todas as partes (char) em um só int
@@ -76,18 +80,21 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             aux = aux << 18; //é realizado o shift à esquerda, para podermos depois inserir os 18 bits que faltam no final
 
             carac = fgetc(arquivo_entrada); //para ler o segundo byte
+            printf("utf-8 %02x\n", carac);
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
             carac = carac << 12; //é realizado o shift à esquerda, para podermos depois inserir os 12 bits que faltam no final
 
             carac = carac | aux; //une as duas partes (char) em um só int
 
             aux = fgetc(arquivo_entrada); //para ler o terceiro byte
+            printf("utf-8 %02x\n", aux);
             aux = aux & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
             aux = aux << 6; //é realizado o shift à esquerda, para podermos depois inserir os 6 bits que faltam no final
 
             carac = carac | aux; //une todas as três partes (char) em um só int
 
             aux = fgetc(arquivo_entrada); //para ler o quarto byte
+            printf("utf-8 %02x\n", aux);
             aux = aux & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
             carac = carac | aux; //une todas as partes (char) em um só int
