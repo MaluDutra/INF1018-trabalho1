@@ -25,16 +25,18 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
     
     unsigned int carac;
     unsigned int aux;
-    unsigned int BOM = 65279;
+    unsigned int BOM = 65279; //caractere especial para UTF-32, neste caso necessariamente em little-endian (FF FE 00 00)
 
     printf("%02x\n", BOM);
     dump(&BOM, sizeof(BOM));
+    fwrite(&BOM, 1, sizeof(int), arquivo_saida);
 
     while(!feof(arquivo_entrada)){ //iniciando leitura do arquivo de entrada
         carac = fgetc(arquivo_entrada); //lê o primeiro byte
 
         if (carac <= 0x7F){ //primeiro caso: 1 byte (de 0x00 a 0x7F)
-            carac = carac;
+            fwrite(&carac, 1, sizeof(int), arquivo_saida);
+
         } else if (carac <= 0xDF){ //segundo caso: 2 bytes (de 0x80 a 0x7FF)
             aux = carac;
 
@@ -45,6 +47,8 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
             carac = carac | aux; //une as duas partes (char) em um só int
+
+            fwrite(&carac, 1, sizeof(int), arquivo_saida);
 
         } else if (carac <= 0xEF){ //terceiro caso: 3 bytes (de 0x800 a oxFFFF)
             aux = carac;
@@ -62,6 +66,8 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             aux = aux & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
             carac = carac | aux; //une todas as partes (char) em um só int
+
+            fwrite(&carac, 1, sizeof(int), arquivo_saida);
 
         } else if (carac <= 0xF7){ //quarto caso: 4 bytes (de 0x10000 a 0x10FFFF)
             aux = carac;
@@ -85,13 +91,17 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             aux = aux & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
             carac = carac | aux; //une todas as partes (char) em um só int
+
+            fwrite(&carac, 1, sizeof(int), arquivo_saida);
+
         } 
         
         printf("%02x\n", carac);
         dump(&carac, sizeof(carac));
     }
 
-
+    //precisamos fechar os arquivos??
+    //os arquivos precisam estar em .bin ou .txt??
     return 0;
 }
 
