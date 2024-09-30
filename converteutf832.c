@@ -25,7 +25,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
     
     unsigned int carac;
     unsigned int aux;
-    unsigned int BOM = 65279; //caractere especial para UTF-32, neste caso necessariamente em little-endian (FF FE 00 00)
+    unsigned int BOM = 0x0000FEFF; //caractere especial BOM para o início do arquivo em UTF-32
 
     printf("%02x\n", BOM);
     dump(&BOM, sizeof(BOM));
@@ -48,7 +48,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             printf("utf-8 %02x\n", carac);
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
 
-            carac = carac | aux; //une as duas partes (char) em um só int
+            carac = aux | carac; //une as duas partes (char) em um só int
 
             fwrite(&carac, 1, sizeof(int), arquivo_saida);
 
@@ -63,7 +63,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
             carac = carac << 6; //é realizado o shift à esquerda, para podermos depois inserir os 6 bits que faltam no final
 
-            carac = carac | aux; //une as duas partes (char) em um só int
+            carac = aux | carac; //une as duas partes (char) em um só int
 
             aux = fgetc(arquivo_entrada); //para ler o terceiro byte
             printf("utf-8 %02x\n", aux);
@@ -84,7 +84,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
             carac = carac & 0x3F; //ao realizar a operação & com 0011 1111, pegamos os 6 últimos bits
             carac = carac << 12; //é realizado o shift à esquerda, para podermos depois inserir os 12 bits que faltam no final
 
-            carac = carac | aux; //une as duas partes (char) em um só int
+            carac = aux | carac; //une as duas partes (char) em um só int
 
             aux = fgetc(arquivo_entrada); //para ler o terceiro byte
             printf("utf-8 %02x\n", aux);
@@ -107,7 +107,6 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
         dump(&carac, sizeof(carac));
     }
 
-    //precisamos fechar os arquivos??
     //os arquivos precisam estar em .bin ou .txt??
     return 0;
 }
