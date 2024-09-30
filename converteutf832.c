@@ -29,14 +29,15 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
     printf("%02x\n", BOM);
     dump(&BOM, sizeof(BOM));
-    fwrite(&BOM, 1, sizeof(int), arquivo_saida);
+    fwrite(&BOM, sizeof(BOM), 1, arquivo_saida);
 
     while(!feof(arquivo_entrada)){ //iniciando leitura do arquivo de entrada
+        //verificar para cada fgetc se de fato foi lido algo?!!?!?!!?!?!?!?!?!?!?!?!??!
         carac = fgetc(arquivo_entrada); //lê o primeiro byte
         printf("utf-8 %02x\n", carac);
 
         if (carac <= 0x7F){ //primeiro caso: 1 byte (de 0x00 a 0x7F)
-            fwrite(&carac, 1, sizeof(int), arquivo_saida);
+            fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
         } else if (carac <= 0xDF){ //segundo caso: 2 bytes (de 0x80 a 0x7FF)
             aux = carac;
@@ -50,7 +51,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
             carac = aux | carac; //une as duas partes (char) em um só int
 
-            fwrite(&carac, 1, sizeof(int), arquivo_saida);
+            fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
         } else if (carac <= 0xEF){ //terceiro caso: 3 bytes (de 0x800 a oxFFFF)
             aux = carac;
@@ -71,7 +72,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
             carac = carac | aux; //une todas as partes (char) em um só int
 
-            fwrite(&carac, 1, sizeof(int), arquivo_saida);
+            fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
         } else if (carac <= 0xF7){ //quarto caso: 4 bytes (de 0x10000 a 0x10FFFF)
             aux = carac;
@@ -99,7 +100,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
             carac = carac | aux; //une todas as partes (char) em um só int
 
-            fwrite(&carac, 1, sizeof(int), arquivo_saida);
+            fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
         } 
         
