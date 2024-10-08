@@ -1,0 +1,5 @@
+1 byte: A
+2 bytes: Ω
+3 bytes: ጨ
+4 bytes: 𐍈
+END
