@@ -36,10 +36,12 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
         carac = fgetc(arquivo_entrada); //lê o primeiro byte
         printf("utf-8 %02x\n", carac);
 
-        if (carac <= 0x7F){ //primeiro caso: 1 byte (de 0x00 a 0x7F)
+        //primeiro caso: 1 byte (de 0x00 a 0x7F)
+        if ((carac & 0x80) == 0){ // 0xxx xxx & 1000 0000 == 0 --> verifica primeiro bit
             fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
-        } else if (carac <= 0xDF){ //segundo caso: 2 bytes (de 0x80 a 0x7FF)
+        } //segundo caso: 2 bytes (de 0x80 a 0x7FF)
+        else if ((carac & 0xE0) == 0xC0){ // 110x xxxx & 1110 0000 == 1100 0000 --> verifica os três primeiros bits
             aux = carac;
 
             aux = aux & 0x1F; //ao realizar a operação & com 0001 1111, pegamos os 5 últimos bits
@@ -53,7 +55,8 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
             fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
-        } else if (carac <= 0xEF){ //terceiro caso: 3 bytes (de 0x800 a oxFFFF)
+        } //terceiro caso: 3 bytes (de 0x800 a 0xFFFF)
+        else if ((carac & 0xF0) == 0xE0){ // 1110 xxxx & 1111 0000 == 1110 0000 --> verificar os quatro primeiros bits
             aux = carac;
 
             aux = aux & 0xF; //ao realizar a operação & com 0000 1111, pegamos os 4 últimos bits
@@ -74,7 +77,8 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
             fwrite(&carac, sizeof(carac), 1, arquivo_saida);
 
-        } else if (carac <= 0xF7){ //quarto caso: 4 bytes (de 0x10000 a 0x10FFFF)
+        } //quarto caso: 4 bytes (de 0x10000 a 0x10FFFF) 
+        else if ((carac & 0xF8) == 0xF0){ // 1111 0xxx & 1111 1000 == 1111 0000 --> verificar os 5 primeiros bits
             aux = carac;
 
             aux = aux & 0x7; //ao realizar a operação & com 0000 0111, pegamos os 3 últimos bits
@@ -108,7 +112,6 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
         dump(&carac, sizeof(carac));
     }
 
-    //os arquivos precisam estar em .bin ou .txt??
     return 0;
 }
 
