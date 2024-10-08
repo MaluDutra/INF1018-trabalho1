@@ -13,7 +13,7 @@ void dump(void *p, int n){
 }
 
 int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
-    
+
     return 0;
 }
 
@@ -32,11 +32,11 @@ int convUtf32p8(FILE *arquivo_entrada, FILE *arquivo_saida){
     }
 
     unsigned int carac; 
-    unsigned int bom;
+    unsigned int bom; 
     char auxC[4]; // variável para manipular os bits
 
-    fread(&bom,sizeof(int),1,arquivo_entrada);
-    if ((bom != LITTLEBOM) && (bom != BIGBOM)){
+    fread(&bom,sizeof(int),1,arquivo_entrada); // lê o primeiro caractere, equivalente ao BOM
+    if ((bom != LITTLEBOM) && (bom != BIGBOM)){ // erro caso o BOM não seja reconhecido
         fprintf(stderr,"Ocorreu um erro ao identificar o BOM\n");
         printf("Ocorreu um erro ao identificar o BOM\n");
         return -1;
@@ -47,90 +47,90 @@ int convUtf32p8(FILE *arquivo_entrada, FILE *arquivo_saida){
         printf("O arquivo está em little endian\n");
         while(fread(&carac,sizeof(int),1,arquivo_entrada)){ // o loop continua enquanto caracteres são lidos
             printf("utf-32 %08x\n", carac);
-            if (carac <= 0x007F){ // caso o caractere tenha um byte
+            if (carac <= 0x007F){ // caso o caractere vá ter 1 byte
                 auxC[0] = (char) carac;
-                auxC[0] = auxC[0] & 0x7F;
+                auxC[0] = auxC[0] & 0x7F; // pega os 7 bits menos significativos
                 dump(auxC,1);
                 fwrite(auxC, sizeof(char), 1, arquivo_saida);
             }
-            else if (carac <= 0x07FF){
-                auxC[0] = (char) (carac >> 6);
-                auxC[0] = auxC[0] | 0xC0;
-                auxC[1] = (char) (carac & 0x3F);
+            else if (carac <= 0x07FF){ // caso o caractere vá ter 2 bytes
+                auxC[0] = (char) (carac >> 6); // pega os bits que serão utilizados no primeiro byte
+                auxC[0] = auxC[0] | 0xC0; // coloca na formatação de UTF-8
+                auxC[1] = (char) (carac & 0x3F); // pega os 6 bits menos significativos
                 auxC[1] = auxC[1] | 0x80;
                 dump(auxC,2);
                 fwrite(auxC, 2, 1, arquivo_saida);
             }
-            else if (carac <= 0xFFFF){
-                auxC[0] = (char) (carac >> 12);
+            else if (carac <= 0xFFFF){ // caso o caractere vá ter 3 bytes
+                auxC[0] = (char) (carac >> 12); // pega os bits que serão utilizados no primeiro byte
                 auxC[0] = auxC[0] | 0xE0;
-                auxC[1] = (char) (carac >> 6);
+                auxC[1] = (char) (carac >> 6); // pega os bits que serão utilizados no segundo byte
                 auxC[1] = auxC[1] & 0x3F;
                 auxC[1] = auxC[1] | 0x80;
-                auxC[2] = (char) (carac & 0x3F);
+                auxC[2] = (char) (carac & 0x3F); // pega os bits que serão utilizados no terceito byte
                 auxC[2] = auxC[2] | 0x80;
                 dump(auxC,3);
                 fwrite(auxC, 3, 1, arquivo_saida);
             }
-            else if (carac <= 0x10FFFF){
-                auxC[0] = (char) (carac >> 18);
+            else if (carac <= 0x10FFFF){ // caso o caractere vá ter 4 bytes
+                auxC[0] = (char) (carac >> 18); // pega os bits que serão utilizados no primeiro byte
                 auxC[0] = auxC[0] | 0xF0;
-                auxC[1] = (char) (carac >> 12);
+                auxC[1] = (char) (carac >> 12); // pega os bits que serão utilizados no segundo byte
                 auxC[1] = auxC[1] & 0x3F;
                 auxC[1] = auxC[1] | 0x80;
-                auxC[2] = (char) (carac >> 6);
+                auxC[2] = (char) (carac >> 6); // pega os bits que serão utilizados no terceiro byte
                 auxC[2] = auxC[2] & 0x3F;
                 auxC[2] = auxC[2] | 0x80;
-                auxC[3] = (char) (carac & 0x3F);
+                auxC[3] = (char) (carac & 0x3F); // pega os bits que serão utilizados no quarto byte
                 auxC[3] = auxC[3] | 0x80;
                 dump(auxC,4);
                 fwrite(auxC, 4, 1, arquivo_saida);
             }
         }
     }
-    else if (bom == BIGBOM){
+    else if (bom == BIGBOM){ // caso o arquivo esteja em big endian
         printf("big endian\n");
         while(fread(&carac,sizeof(int),1,arquivo_entrada)){
-            carac = ((carac>>24)&0xff) | // move byte 3 to byte 0
-                    ((carac<<8)&0xff0000) | // move byte 1 to byte 2
-                    ((carac>>8)&0xff00) | // move byte 2 to byte 1
-                    ((carac<<24)&0xff000000); // byte 0 to byte 3
+            carac = ((carac>>24)&0xff) | // move o quarto byte menos significativo para o byte menos significativo
+                    ((carac<<8)&0xff0000) | // move o segundo byte menos significativo para o terceiro byte menos significativo
+                    ((carac>>8)&0xff00) | // move o terceiro byte menos significativo para o segundo byte menos significativo
+                    ((carac<<24)&0xff000000); // move o byte menos significativo para o quarto byte menos significativo
             printf("utf-32 %08x\n", carac);
-            if (carac <= 0x007F){
+            if (carac <= 0x007F){ // caso o caractere vá ter 1 byte
                 auxC[0] = (char) carac;
-                auxC[0] = auxC[0] & 0x7F;
+                auxC[0] = auxC[0] & 0x7F; // pega os 7 bits menos significativos
                 dump(auxC,1);
                 fwrite(auxC, sizeof(char), 1, arquivo_saida);
             }
-            else if (carac <= 0x07FF){
-                auxC[0] = (char) (carac >> 6);
-                auxC[0] = auxC[0] | 0xC0;
-                auxC[1] = (char) (carac & 0x3F);
+            else if (carac <= 0x07FF){ // caso o caractere vá ter 2 bytes
+                auxC[0] = (char) (carac >> 6); // pega os bits que serão utilizados no primeiro byte
+                auxC[0] = auxC[0] | 0xC0; // coloca na formatação de UTF-8
+                auxC[1] = (char) (carac & 0x3F); // pega os 6 bits menos significativos
                 auxC[1] = auxC[1] | 0x80;
                 dump(auxC,2);
                 fwrite(auxC, 2, 1, arquivo_saida);
             }
-            else if (carac <= 0xFFFF){
-                auxC[0] = (char) (carac >> 12);
+            else if (carac <= 0xFFFF){ // caso o caractere vá ter 3 bytes
+                auxC[0] = (char) (carac >> 12); // pega os bits que serão utilizados no primeiro byte
                 auxC[0] = auxC[0] | 0xE0;
-                auxC[1] = (char) (carac >> 6);
+                auxC[1] = (char) (carac >> 6); // pega os bits que serão utilizados no segundo byte
                 auxC[1] = auxC[1] & 0x3F;
                 auxC[1] = auxC[1] | 0x80;
-                auxC[2] = (char) (carac & 0x3F);
+                auxC[2] = (char) (carac & 0x3F); // pega os bits que serão utilizados no terceito byte
                 auxC[2] = auxC[2] | 0x80;
                 dump(auxC,3);
                 fwrite(auxC, 3, 1, arquivo_saida);
             }
-            else if (carac <= 0x10FFFF){
-                auxC[0] = (char) (carac >> 18);
+            else if (carac <= 0x10FFFF){ // caso o caractere vá ter 4 bytes
+                auxC[0] = (char) (carac >> 18); // pega os bits que serão utilizados no primeiro byte
                 auxC[0] = auxC[0] | 0xF0;
-                auxC[1] = (char) (carac >> 12);
+                auxC[1] = (char) (carac >> 12); // pega os bits que serão utilizados no segundo byte
                 auxC[1] = auxC[1] & 0x3F;
                 auxC[1] = auxC[1] | 0x80;
-                auxC[2] = (char) (carac >> 6);
+                auxC[2] = (char) (carac >> 6); // pega os bits que serão utilizados no terceiro byte
                 auxC[2] = auxC[2] & 0x3F;
                 auxC[2] = auxC[2] | 0x80;
-                auxC[3] = (char) (carac & 0x3F);
+                auxC[3] = (char) (carac & 0x3F); // pega os bits que serão utilizados no quarto byte
                 auxC[3] = auxC[3] | 0x80;
                 dump(auxC,4);
                 fwrite(auxC, 4, 1, arquivo_saida);
