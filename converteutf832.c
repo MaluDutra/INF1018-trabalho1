@@ -91,10 +91,10 @@ int convUtf32p8(FILE *arquivo_entrada, FILE *arquivo_saida){
     else if (bom == BIGBOM){ // caso o arquivo esteja em big endian
         printf("big endian\n");
         while(fread(&carac,sizeof(int),1,arquivo_entrada)){
-            carac = ((carac>>24)&0xff) | // move o quarto byte menos significativo para o byte menos significativo
-                    ((carac<<8)&0xff0000) | // move o segundo byte menos significativo para o terceiro byte menos significativo
-                    ((carac>>8)&0xff00) | // move o terceiro byte menos significativo para o segundo byte menos significativo
-                    ((carac<<24)&0xff000000); // move o byte menos significativo para o quarto byte menos significativo
+            carac = ((carac>>24)&0xff) | // inverte os bytes para que as operações sejam as mesmas do little endian
+                    ((carac<<8)&0xff0000) | 
+                    ((carac>>8)&0xff00) | 
+                    ((carac<<24)&0xff000000);
             printf("utf-32 %08x\n", carac);
             if (carac <= 0x007F){ // caso o caractere vá ter 1 byte
                 auxC[0] = (char) carac;
