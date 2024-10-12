@@ -39,8 +39,8 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
     }
 
     if (!arquivo_saida){ //caso o arquivo de saída seja NULL
-        fprintf(stderr,"Ocorreu algum erro na abertura do arquivo de saída para UTF-8\n");
-        printf("Ocorreu um erro na abertura do arquivo de saída em UTF-8\n");
+        fprintf(stderr,"Ocorreu algum erro na abertura do arquivo de saída para UTF-32\n");
+        printf("Ocorreu um erro na abertura do arquivo de saída em UTF-32\n");
         return -1;
     }
     
@@ -81,7 +81,6 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 }
 
 int convUtf32p8(FILE *arquivo_entrada, FILE *arquivo_saida){
-    //se der erro -- emitir em stderr, printf de qual tipo de erro e retornar
     if (!arquivo_entrada){ //caso o arquivo de entrada seja NULL
         fprintf(stderr,"Ocorreu algum erro na abertura do arquivo de entrada para UTF-32\n");
         printf("Ocorreu um erro na abertura do arquivo de entrada em UTF-32\n");
