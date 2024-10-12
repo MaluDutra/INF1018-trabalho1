@@ -1,14 +1,5 @@
 #include "converteutf832.h"
 
-void dump(void *p, int n){
-    unsigned char *p1 = p;
-    while (n--){
-        printf("%02x ", *p1);
-        p1++;
-    }
-    putchar('\n');
-}
-
 //função para verificar o primeiro bit e retornar quantos deverão ser lidos
 int tamBytesUtf8(unsigned int byte){
     if ((byte & 0x80) == 0){ // 0xxx xxx & 1000 0000 == 0 
@@ -30,7 +21,6 @@ unsigned int converteBitsUtf8(unsigned int carac, int tamBytes, FILE* arquivo_en
         carac = carac << 6; 
 
         aux = fgetc(arquivo_entrada); 
-        printf("utf-8 %02x\n", aux);
         aux = aux & 0x3F; 
 
         carac = carac | aux; 
@@ -55,13 +45,10 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
     unsigned int carac;
     unsigned int BOM = 0x0000FEFF; //caractere especial BOM para o início do arquivo em UTF-32
 
-    printf("%02x\n", BOM);
-    dump(&BOM, sizeof(BOM));
     fwrite(&BOM, sizeof(BOM), 1, arquivo_saida);
 
     while(!feof(arquivo_entrada)){ 
         carac = fgetc(arquivo_entrada); //lê o primeiro byte
-        printf("utf-8 %02x\n", carac);
         tamBytes = tamBytesUtf8(carac);
 
         if (tamBytes == 1){
@@ -85,9 +72,6 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
 
             fwrite(&carac, sizeof(carac), 1, arquivo_saida);
         } 
-        
-        printf("%02x\n", carac);
-        dump(&carac, sizeof(carac));
     }
 
     return 0;
