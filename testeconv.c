@@ -32,6 +32,36 @@ int main(void){
     fclose(arquivo_entrada);
     fclose(arquivo_saida);
 
+    arquivo_entrada = fopen("utf8_grande_verdade.txt", "rb");
+    arquivo_saida = fopen("utf8_grande_verdade_conv.txt", "wb");
+    
+    if (convUtf8p32(arquivo_entrada, arquivo_saida) == 0){
+        printf("4 - Texto decodificado de UTF-8 grande para UTF-32 com sucesso!\n");
+    }
+
+    fclose(arquivo_entrada);
+    fclose(arquivo_saida);
+
+    arquivo_entrada = fopen("utf32_grande_big_verdade.txt", "rb");
+    arquivo_saida = fopen("utf32_grande_big_conv.txt", "wb");
+    
+    if (convUtf32p8(arquivo_entrada, arquivo_saida) == 0){
+        printf("5 - Texto decodificado de UTF-32 big grande para UTF-8 com sucesso!\n");
+    }
+
+    fclose(arquivo_entrada);
+    fclose(arquivo_saida);
+
+    arquivo_entrada = fopen("utf32_grande_little_verdade.txt", "rb");
+    arquivo_saida = fopen("utf32_grande_little_conv.txt", "wb");
+    
+    if (convUtf32p8(arquivo_entrada, arquivo_saida) == 0){
+        printf("6 - Texto decodificado de UTF-32 little grande para UTF-8 com sucesso!\n");
+    }
+
+    fclose(arquivo_entrada);
+    fclose(arquivo_saida);
+
     printf("Conversão de UTF-32 para UTF-8 para UTF-32 de volta\n");
 
     arquivo_entrada = fopen("utf32_peq.txt", "rb");
