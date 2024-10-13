@@ -46,7 +46,7 @@ int convUtf8p32(FILE *arquivo_entrada, FILE *arquivo_saida){
     
     int tamBytes;
     unsigned int carac;
-    unsigned int BOM = 0x0000FEFF; //caractere especial BOM para o início do arquivo em UTF-32
+    unsigned int BOM = LITTLEBOM; //caractere especial BOM para o início do arquivo em UTF-32
 
     fwrite(&BOM, sizeof(BOM), 1, arquivo_saida);
 
